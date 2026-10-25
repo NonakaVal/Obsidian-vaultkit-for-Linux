@@ -13,7 +13,7 @@ Global menu for **snippets + daily capture** for Obsidian on Linux desktops (End
 **Daily capture** (based on sendlog)
 - **Quick capture**: 9 types with emojis (🧭 ✅ 🌱 💬 😴 💀 ⭐ 💩 ❓) inserted in the `# Capture` section of the daily note
 - Tasks receive a checkbox: `- [ ] ✅ text - HH:mm \ [[AAAAMM-DD]]`
-- **Open daily note**: `obsidian://` URI; creates the note (with mood, prev/next links, `Capture/Events/Caderno`) if it does not exist
+- **Open daily note**: `obsidian://` URI; creates the note if it does not exist — rendering the template offline (without Obsidian or Templater): mood, date/week, prev/next links and the daily quote (ZenQuotes API; empty if offline), including the vault's real Templater template (`<%* %>`, `tp.date.*`, `tp.web.daily_quote()`); unknown expressions are discarded
 
 ## Usage
 
@@ -61,7 +61,7 @@ Created automatically on first use (`~/.config/vaultkit/config`), and also edita
 | `SNIPPETS_DIR` | `$VAULT_DIR/Snippets` | Snippets folder |
 | `DAILY_NOTES_DIR` | `Calendar & Review/Daily Notes` (relative to the vault) | Daily notes |
 | `OBSIDIAN_VAULT_NAME` | basename of `VAULT_DIR` | Vault name in Obsidian |
-| `DAILY_NOTE_TEMPLATE` | `config/templates/daily-note.md` | Daily note template (placeholders `{{DATE}}`, `{{TIME}}`, `{{PREVIOUS_DATE}}`, `{{NEXT_DATE}}`, `{{WEEK}}`, `{{MOOD}}`, `{{DAILY_QUOTE}}`) |
+| `DAILY_NOTE_TEMPLATE` | template real do vault (ex.: `X/Templates/Format/B-Daily Note Template.md`), relativo ao vault | Template used when creating the daily note offline. Templater syntax is rendered by vaultkit itself (mood, `tp.date.*`, `tp.web.daily_quote()`, discarded unknown expressions); if the configured template is missing, falls back to `~/.local/share/vaultkit/templates/daily-note.md` (placeholders `{{DATE}}`, `{{TIME}}`, `{{PREVIOUS_DATE}}`, `{{NEXT_DATE}}`, `{{WEEK}}`, `{{MOOD}}`, `{{DAILY_QUOTE}}`) |
 | `EDITOR_APP` / `TERMINAL_APP` | `mousepad` / detected | Apps used |
 | `ROFI_WINDOW_WIDTH` | `510px` | Width of the Rofi window |
 

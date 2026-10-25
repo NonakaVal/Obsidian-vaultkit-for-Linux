@@ -11,6 +11,12 @@ DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/vaultkit"
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/vaultkit"
 TEMPLATE_DIR="$CONFIG_DIR/templates"
 
+# TEMPLATE_FILE = template de fallback da note diária (usado quando o template
+# configurado — ex.: o real do vault — não está disponível). Vive em DATA_DIR,
+# FORA de TEMPLATE_DIR: este é o catálogo de templates de snippet mostrado ao
+# criar um snippet, e o template diário não é um snippet.
+TEMPLATE_FILE="$DATA_DIR/templates/daily-note.md"
+
 HISTORY_FILE="$DATA_DIR/history"
 FAVORITES_FILE="$DATA_DIR/favorites"
 
@@ -38,7 +44,7 @@ load_config() {
     # Daily Note (SendLog)
     DAILY_NOTES_DIR="${DAILY_NOTES_DIR:-Calendar & Review/Daily Notes}"   # relativo ao VAULT_DIR
     OBSIDIAN_VAULT_NAME="${OBSIDIAN_VAULT_NAME:-$(basename "$VAULT_DIR")}"
-    DAILY_NOTE_TEMPLATE="${DAILY_NOTE_TEMPLATE:-$TEMPLATE_DIR/daily-note.md}"
+    DAILY_NOTE_TEMPLATE="${DAILY_NOTE_TEMPLATE:-X/Templates/Format/B-Daily Note Template.md}"
     DAILY_NOTE_TEMPLATE="$(normalize_path "$DAILY_NOTE_TEMPLATE" "$VAULT_DIR")"
 
     # Propagate para core.sh / note-search.sh / daily-note.sh
@@ -120,7 +126,7 @@ write_default_config() {
             printf '# Daily Note (relativo ao VAULT_DIR se relativo)\n'
             printf 'DAILY_NOTES_DIR=%s\n' "$(_config_quote "Calendar & Review/Daily Notes")"
             printf 'OBSIDIAN_VAULT_NAME=%s   # nome da vault no Obsidian (padrão: última pasta de VAULT_DIR)\n' "$(_config_quote "$(basename "$HOME/Documentos/Notes")")"
-            printf 'DAILY_NOTE_TEMPLATE=%s   # template da nota diária (em *.md em config)\n' "$(_config_quote "$TEMPLATE_DIR/daily-note.md")"
+            printf 'DAILY_NOTE_TEMPLATE=%s   # template da note diária (relativo ao vault; fallback: ~/.local/share/vaultkit/templates/daily-note.md)\n' "$(_config_quote "X/Templates/Format/B-Daily Note Template.md")"
             printf '# Aplicativos\n'
             printf 'EDITOR_APP=%s\n' "$(_config_quote "mousepad")"
             printf 'TERMINAL_APP=%s   # terminal aberto pela busca (Buscar no terminal)\n' "$(_config_quote "$(detect_terminal)")"
