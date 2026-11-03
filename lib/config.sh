@@ -42,7 +42,7 @@ load_config() {
     ROFI_WINDOW_WIDTH="${ROFI_WINDOW_WIDTH:-510px}"
 
     # Daily Note (SendLog)
-    DAILY_NOTES_DIR="${DAILY_NOTES_DIR:-Calendar & Review/Daily Notes}"   # relativo ao VAULT_DIR
+    DAILY_NOTES_DIR="${DAILY_NOTES_DIR:-Calendar & Review/gNotes}"   # relativo ao VAULT_DIR
     OBSIDIAN_VAULT_NAME="${OBSIDIAN_VAULT_NAME:-$(basename "$VAULT_DIR")}"
     DAILY_NOTE_TEMPLATE="${DAILY_NOTE_TEMPLATE:-X/Templates/Format/B-Daily Note Template.md}"
     DAILY_NOTE_TEMPLATE="$(normalize_path "$DAILY_NOTE_TEMPLATE" "$VAULT_DIR")"

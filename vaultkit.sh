@@ -134,18 +134,18 @@ open_search() {
 # =============================================================================
 main_menu() {
     local options choice
-    options="$(printf "Navegar snippets\nCaptura rápida\nHistorico\nFavoritos\nBuscar por tag\nBuscar no terminal\nAbrir nota diária\nConfiguracoes")"
+    options="$(printf "📂 Navegar snippets\n⚡ Captura rápida\n🕘 Historico\n🌟 Favoritos\n🏷️ Buscar por tag\n🖥️ Buscar no terminal\n📅 Abrir nota diária\n⚙️ Configuracoes")"
 
-    choice=$(echo "$options" | rofi_menu -p "") || return 0
+    choice=$(echo "$options" | rofi_menu -p "vaultkit") || return 0
 
     case "$choice" in
-        "Navegar snippets")
+        "📂 Navegar snippets")
             browser
             ;;
-        "Captura rápida")
+        "⚡ Captura rápida")
             daily_add_log
             ;;
-        "Historico")
+        "🕘 Historico")
             local entries chosen path
             entries="$(list_history)"
             [ -z "$entries" ] && notify-send "vaultkit" "Historico vazio." && return 0
@@ -154,7 +154,7 @@ main_menu() {
             path="$(echo "$chosen" | cut -f3)"
             show_actions "$path"
             ;;
-        "Favoritos")
+        "🌟 Favoritos")
             local entries chosen path
             entries="$(list_favorites)"
             [ -z "$entries" ] && notify-send "vaultkit" "Nenhum favorito." && return 0
@@ -163,16 +163,16 @@ main_menu() {
             path="$(echo "$chosen" | cut -f3)"
             show_actions "$path"
             ;;
-        "Buscar por tag")
+        "🏷️ Buscar por tag")
             browse_by_tag
             ;;
-        "Buscar no terminal")
+        "🖥️ Buscar no terminal")
             open_search
             ;;
-        "Abrir nota diária")
+        "📅 Abrir nota diária")
             daily_open_note
             ;;
-        "Configuracoes")
+        "⚙️ Configuracoes")
             open_settings
             ;;
     esac

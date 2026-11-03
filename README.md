@@ -25,7 +25,7 @@ vaultkit daily    # open today's daily note in Obsidian
 vaultkit settings # settings menu
 ```
 
-Main menu: Browse snippets · Quick capture · History · Favorites · Search by tag · Search in terminal · Open daily note · Settings.
+Main menu: 📂 Browse snippets · ⚡ Quick capture · 🕘 History · 🌟 Favorites · 🏷️ Search by tag · 🖥️ Search in terminal · 📅 Open daily note · ⚙️ Settings.
 
 ## Installation
 
@@ -81,5 +81,3 @@ lib/note-search.sh          terminal fzf search (search_notes / nf)
 assets/simple-tokyonight.rasi  Rofi theme
 ```
 
-Origin: a merge of `~/Projetos/mdsnip` and `~/Projetos/obsidian-global-quick-capture` (SendLog), which have become legacy — the old `mdsnip` and `sendlog` commands are removed from PATH during updates.
-# Obsidian-vaultkit-for-Linux
