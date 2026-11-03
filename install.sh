@@ -163,7 +163,7 @@ source_var() {
 
 # Migra config + template do SendLog (obsidian-global-quick-capture):
 #   ~/.config/sendlog/config                 -> chaves diárias do vaultkit
-#   ~/.config/sendlog/daily-note-template.md -> ~/.config/vaultkit/templates/daily-note.md
+#   ~/.config/sendlog/daily-note-template.md -> ~/.local/share/vaultkit/templates/daily-note.md
 # Idempotente: só preenche chaves ausentes; nunca sobrescreve.
 migrate_sendlog_daily() {
     local sendlog_cfg="${XDG_CONFIG_HOME:-$HOME/.config}/sendlog/config"
@@ -180,7 +180,9 @@ migrate_sendlog_daily() {
     [[ -n "$daily_dir" && "$daily_dir" != /* && -n "$vault" ]] && daily_dir="$vault/$daily_dir"
 
     # Template do SendLog -> local padrão do vaultkit
-    local vaultkit_tpl="$CONFIG_DIR/templates/daily-note.md"
+    # (TEMPLATE_DIR é o catálogo de snippets; o template diário vive em DATA_DIR,
+    #  cf. lib/config.sh: "${XDG_DATA_HOME:-$HOME/.local/share}/vaultkit")
+    local vaultkit_tpl="${XDG_DATA_HOME:-$HOME/.local/share}/vaultkit/templates/daily-note.md"
     if [[ -f "$sendlog_tpl" && ! -f "$vaultkit_tpl" ]]; then
         mkdir -p "$(dirname "$vaultkit_tpl")"
         cp -a "$sendlog_tpl" "$vaultkit_tpl" \

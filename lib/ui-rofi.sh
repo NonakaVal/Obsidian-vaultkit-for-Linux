@@ -309,7 +309,7 @@ new_snippet() {
 
     if [ -d "$TEMPLATE_DIR" ] && [ "$(ls -A "$TEMPLATE_DIR" 2>/dev/null)" ]; then
         local template
-        template=$(ls "$TEMPLATE_DIR" | rofi_menu -p "Template (Esc=padrao)") || true
+        template=$(ls "$TEMPLATE_DIR" | grep -v '^daily-note\.md$' | rofi_menu -p "Template (Esc=padrao)") || true
         if [ -n "$template" ] && [ -f "$TEMPLATE_DIR/$template" ]; then
             local clipboard_content template_content
             clipboard_content="$(read_clipboard 2>/dev/null || true)"
