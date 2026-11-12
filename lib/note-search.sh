@@ -210,9 +210,23 @@ _preview_block() {
   fi
 }
 
+_absolute_note_path() {
+  local rel_path="$1"
+  local vault_root="${VAULT_DIR%/}"
+
+  if [[ "$rel_path" == /* ]]; then
+    printf '%s' "$rel_path"
+  elif [[ -z "$vault_root" ]]; then
+    printf '/%s' "$rel_path"
+  else
+    printf '%s/%s' "$vault_root" "$rel_path"
+  fi
+}
+
 _copy_selected_path() {
   local rel_path="$1"
-  local path="$VAULT_DIR/$rel_path"
+  local path
+  path=$(_absolute_note_path "$rel_path")
 
   if ! printf '%s' "$path" | copy_to_clipboard; then
     notify-send "vaultkit" "Não foi possível copiar o caminho para o clipboard." 2>/dev/null || true
@@ -220,6 +234,12 @@ _copy_selected_path() {
   fi
 
   notify-send "vaultkit" "Caminho do arquivo copiado." 2>/dev/null || true
+}
+
+_edit_selected_note() {
+  local path
+  path=$(_absolute_note_path "$1")
+  "${EDITOR_APP:-nano}" "$path"
 }
 
 # =============================================================================
@@ -355,7 +375,7 @@ _send_to_workspace_block() {
 export -f _note_title _preview_note _preview_note_line \
   _list_notes_by_name _search_notes_by_content_query \
   _list_code_blocks _preview_block \
-  _copy_selected_path \
+  _absolute_note_path _copy_selected_path _edit_selected_note \
   _folder_selector _block_selector \
   _send_to_workspace_name _send_to_workspace_content _send_to_workspace_block
 
@@ -375,7 +395,7 @@ notes_fzf_name() {
         --preview='bash -c '\''_preview_note "$1"'\'' _ {1}' \
         --preview-window='right:65%:wrap:border-left' \
         --bind='ctrl-r:reload(bash -c '\''_list_notes_by_name'\'')' \
-        --bind='ctrl-e:execute(${EDITOR:-nano} {1} < /dev/tty > /dev/tty 2>&1)' \
+        --bind='ctrl-e:execute(bash -c '\''_edit_selected_note "$1"'\'' _ {1} < /dev/tty > /dev/tty 2>&1)' \
         --bind='ctrl-o:toggle-sort' \
         --bind='alt-y:execute-silent(bash -c '\''_copy_selected_path "$1"'\'' _ {1})' \
         --bind='ctrl-y:execute(bash -c '\''_send_to_workspace_name "$1"'\'' _ {1})' \
@@ -405,7 +425,7 @@ notes_fzf_content() {
         --preview='bash -c '\''_preview_note_line "$1" "$2" "$3"'\'' _ {1} {2} {q}' \
         --preview-window='right:68%:wrap:border-left' \
         --bind='ctrl-r:reload:bash -c '\''_search_notes_by_content_query "$1"'\'' _ {q}' \
-        --bind='ctrl-e:execute(${EDITOR:-nano} {1} < /dev/tty > /dev/tty 2>&1)' \
+        --bind='ctrl-e:execute(bash -c '\''_edit_selected_note "$1"'\'' _ {1} < /dev/tty > /dev/tty 2>&1)' \
         --bind='ctrl-o:toggle-sort' \
         --bind='alt-y:execute-silent(bash -c '\''_copy_selected_path "$1"'\'' _ {1})' \
         --bind='ctrl-y:execute(bash -c '\''_send_to_workspace_content "$1" "$2"'\'' _ {1} {2})' \
@@ -438,7 +458,7 @@ notes_fzf_blocks() {
         --bind='ctrl-r:reload:bash -c '\''build_code_index && _list_code_blocks "$1"'\'' _ {q}' \
         --preview='bash -c '\''_preview_block "$1" "$2" "$3"'\'' _ {1} {2} {q}' \
         --preview-window='right:65%:wrap:border-left' \
-        --bind='ctrl-e:execute(${EDITOR:-nano} {1} < /dev/tty > /dev/tty 2>&1)' \
+        --bind='ctrl-e:execute(bash -c '\''_edit_selected_note "$1"'\'' _ {1} < /dev/tty > /dev/tty 2>&1)' \
         --bind='ctrl-o:toggle-sort' \
         --bind='alt-y:execute-silent(bash -c '\''_copy_selected_path "$1"'\'' _ {1})' \
         --bind='ctrl-y:execute(bash -c '\''_send_to_workspace_block "$1" "$2"'\'' _ {1} {2})' \

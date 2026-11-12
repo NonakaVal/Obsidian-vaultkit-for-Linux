@@ -7,7 +7,7 @@ Global menu for **snippets + daily capture** for Obsidian on Linux desktops (End
 **Snippets** (based on mdsnip)
 - Folder navigation in Rofi; copy to clipboard or type (`xdotool`)
 - History and favorites; tag search (Obsidian-compatible)
-- Extraction/indexing of code blocks from the vault; advanced terminal search (`fzf` + `glow`), with `Alt+n/c/b` mode shortcuts and `Alt+y` to copy the selected file path without leaving the terminal
+- Extraction/indexing of code blocks from the vault; advanced terminal search (`fzf` + `glow`), with `Alt+n/c/b` mode shortcuts, `Ctrl+e` to open a note in the configured editor, and `Alt+y` to copy the selected file path without leaving the terminal
 - Export/Import `.tar.gz`; snippet templates (`{{TITLE}}`, `{{DATE}}`, `{{CLIPBOARD}}`)
 
 **Daily capture** (based on sendlog)
