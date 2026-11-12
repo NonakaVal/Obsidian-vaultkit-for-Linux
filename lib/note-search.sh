@@ -33,6 +33,7 @@ export -f safe_filename _read_field \
     block_content extract_blocks block_preview \
     build_code_index index_age index_stale search_index \
     save_block normalize_snippet_target \
+    copy_to_clipboard \
     list_snippet_folders build_workspace_cache ensure_workspace_cache block_in_workspace \
     2>/dev/null || true
 
@@ -209,6 +210,18 @@ _preview_block() {
   fi
 }
 
+_copy_selected_path() {
+  local rel_path="$1"
+  local path="$VAULT_DIR/$rel_path"
+
+  if ! printf '%s' "$path" | copy_to_clipboard; then
+    notify-send "vaultkit" "Não foi possível copiar o caminho para o clipboard." 2>/dev/null || true
+    return 1
+  fi
+
+  notify-send "vaultkit" "Caminho do arquivo copiado." 2>/dev/null || true
+}
+
 # =============================================================================
 # Seletor de pasta de destino (salvar bloco em um workspace)
 # =============================================================================
@@ -342,6 +355,7 @@ _send_to_workspace_block() {
 export -f _note_title _preview_note _preview_note_line \
   _list_notes_by_name _search_notes_by_content_query \
   _list_code_blocks _preview_block \
+  _copy_selected_path \
   _folder_selector _block_selector \
   _send_to_workspace_name _send_to_workspace_content _send_to_workspace_block
 
@@ -363,8 +377,9 @@ notes_fzf_name() {
         --bind='ctrl-r:reload(bash -c '\''_list_notes_by_name'\'')' \
         --bind='ctrl-e:execute(${EDITOR:-nano} {1} < /dev/tty > /dev/tty 2>&1)' \
         --bind='ctrl-o:toggle-sort' \
+        --bind='alt-y:execute-silent(bash -c '\''_copy_selected_path "$1"'\'' _ {1})' \
         --bind='ctrl-y:execute(bash -c '\''_send_to_workspace_name "$1"'\'' _ {1})' \
-        --header='ctrl-r atualizar  ·  ctrl-e editar  ·  ctrl-o ordenar  ·  ctrl-y salvar em pasta' \
+        --header='alt-y copiar caminho  ·  ctrl-r atualizar  ·  ctrl-e editar  ·  ctrl-o ordenar  ·  ctrl-y salvar em pasta' \
         --ansi \
         --prompt='Nome > ' \
         --height=95% \
@@ -392,8 +407,9 @@ notes_fzf_content() {
         --bind='ctrl-r:reload:bash -c '\''_search_notes_by_content_query "$1"'\'' _ {q}' \
         --bind='ctrl-e:execute(${EDITOR:-nano} {1} < /dev/tty > /dev/tty 2>&1)' \
         --bind='ctrl-o:toggle-sort' \
+        --bind='alt-y:execute-silent(bash -c '\''_copy_selected_path "$1"'\'' _ {1})' \
         --bind='ctrl-y:execute(bash -c '\''_send_to_workspace_content "$1" "$2"'\'' _ {1} {2})' \
-        --header='ctrl-r atualizar  ·  ctrl-e editar  ·  ctrl-o ordenar  ·  ctrl-y salvar em pasta' \
+        --header='alt-y copiar caminho  ·  ctrl-r atualizar  ·  ctrl-e editar  ·  ctrl-o ordenar  ·  ctrl-y salvar em pasta' \
         --prompt='Conteúdo > ' \
         --height=95% \
         --border=rounded \
@@ -424,8 +440,9 @@ notes_fzf_blocks() {
         --preview-window='right:65%:wrap:border-left' \
         --bind='ctrl-e:execute(${EDITOR:-nano} {1} < /dev/tty > /dev/tty 2>&1)' \
         --bind='ctrl-o:toggle-sort' \
+        --bind='alt-y:execute-silent(bash -c '\''_copy_selected_path "$1"'\'' _ {1})' \
         --bind='ctrl-y:execute(bash -c '\''_send_to_workspace_block "$1" "$2"'\'' _ {1} {2})' \
-        --header='ctrl-r reindexar  ·  ctrl-e editar  ·  ctrl-o ordenar  ·  ctrl-y salvar em pasta' \
+        --header='alt-y copiar caminho  ·  ctrl-r reindexar  ·  ctrl-e editar  ·  ctrl-o ordenar  ·  ctrl-y salvar em pasta' \
         --prompt='Blocos > ' \
         --height=95% \
         --border=rounded \
@@ -440,23 +457,37 @@ notes_fzf_blocks() {
 # =============================================================================
 
 search_notes() {
-  local mode
-  mode=$(
+  local result
+  result=$(
     printf "nome\t󰈙  Buscar por nome do arquivo\nconteudo\t󰱼  Buscar dentro do conteúdo das notas\nblocos\t󰎧  Buscar blocos de código\n" |
       fzf \
         --with-nth=2 \
         --delimiter=$'\t' \
         --ansi \
+        --expect=alt-n,alt-c,alt-b \
+        --header='alt-n nome  ·  alt-c conteúdo  ·  alt-b blocos  ·  Enter selecionar' \
         --prompt='Modo > ' \
         --height=40% \
         --border=rounded \
         --color='bg:#0d1117,bg+:#161b22,fg:#39d353,fg+:#aff5b4,hl:#58a6ff,hl+:#79c0ff,prompt:#39d353,info:#8b949e,border:#30363d'
-  )
+  ) || return 0
 
-  case "$mode" in
-    nome*) search_fzf_name ;;
-    conteudo*) search_fzf_content ;;
-    blocos*) search_fzf_blocks ;;
+  local -a selection=()
+  mapfile -t selection <<< "$result"
+  local key="${selection[0]:-}"
+  local mode="${selection[1]:-}"
+
+  case "$key" in
+    alt-n) search_fzf_name ;;
+    alt-c) search_fzf_content ;;
+    alt-b) search_fzf_blocks ;;
+    *)
+      case "$mode" in
+        nome*) search_fzf_name ;;
+        conteudo*) search_fzf_content ;;
+        blocos*) search_fzf_blocks ;;
+      esac
+      ;;
   esac
 }
 
